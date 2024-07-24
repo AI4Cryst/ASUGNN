@@ -1,3 +1,5 @@
+# Author: Bin CAO <barniecao@outlook.com>
+
 import logging
 import glob
 import os
