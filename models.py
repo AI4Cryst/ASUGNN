@@ -1,3 +1,5 @@
+# Author: Bin CAO <barniecao@outlook.com>
+
 import math
 import logging
 import numpy as np
