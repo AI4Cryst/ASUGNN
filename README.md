@@ -5,7 +5,7 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction
 
 ## Dataprocessing.py
 
-`Dataprocessing.py` is used to extract structural data from one database and write it into another database. This process is accelerated through parallel processing. The specific operations are as follows:
+`Dataprocessing.py` is used to extract structural data from one database and write it into another database. All screened structures are saved as a new database to be used in the neural network workflow. This process is accelerated through parallel processing. The specific operations are as follows:
 
 1. **Extracting Data from the Database**: Connect to the source database and retrieve information for each entry, including atomic structures and formation energy.
 2. **Processing Data**: Use the `cry2graph` module from the Crylearn library to convert the extracted atomic structure data into a graph representation, including node embeddings, adjacency matrices, and global information.
