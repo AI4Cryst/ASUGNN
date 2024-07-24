@@ -1,3 +1,5 @@
+# Author: Bin CAO <barniecao@outlook.com>
+
 from Crylearn import cry2graph
 from ase.db import connect
 from concurrent.futures import ProcessPoolExecutor, as_completed
