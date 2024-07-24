@@ -1,3 +1,5 @@
+# Author: Bin CAO <barniecao@outlook.com>
+
 import json
 import torch
 import glob
