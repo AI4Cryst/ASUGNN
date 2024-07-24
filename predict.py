@@ -1,10 +1,4 @@
 import logging
-logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
-)
-
 import glob
 import os
 import numpy as np
@@ -19,6 +13,11 @@ from ase.db import connect
 from utils import set_seed, CharDataset
 from models import *
 
+logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        level=logging.INFO,
+)
 
 def get_all_mpids(db):
     """
@@ -97,5 +96,6 @@ dataset = CharDataset(node_data, edge_data, graph_data, response, max_length, no
 
 if __name__ == "__main__":
     model_path = 'model.pt'
-    dataset = ...  # Replace this with your dataset instance
+    print('"Please assign a directory for the dataset')
+    dataset = ...  # Replace this with your dataset loc
     pred, tru = load_model_and_predict(model_path, dataset)
