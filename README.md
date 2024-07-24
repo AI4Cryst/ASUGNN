@@ -25,13 +25,14 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction
 
 ## predict.py
 
-Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGNN)
 
 `predict.py` is designed to load a pre-trained model, perform predictions on a dataset of graph-based data, and retrieve essential graph-related information from a database.
 
 Example:
 ```python
-model_path = 'model.pt'
+model_path = 'ASUGNN.pt'
 dataset = ...  # Replace this with your dataset instance
 pred, tru = load_model_and_predict(model_path, dataset)
 ```
+
+Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGNN)
