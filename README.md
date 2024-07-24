@@ -12,11 +12,14 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Predictio
 
 `Model.py` contains the implementation of a deep learning model using PyTorch for processing and analyzing graph-based data. The main components are:
 
+
 1. **NetConfig**: A configuration class for setting up the base parameters for the ASUGNN model.
 2. **CausalSelfAttention**: A module that implements a causal self-attention mechanism with learnable adjacency matrix projections.
 3. **CausalCrossAttention**: A module for implementing causal cross-attention, utilizing graph and node features.
 4. **ASU_codec_block**: A codec block that combines self-attention, cross-attention, and multi-layer perceptron (MLP) modules.
 5. **ASU_Codec**: A stack of `ASU_codec_block` modules forming the core of the attention-based encoder.
+
+Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGNN)
 
 ## predict.py
 
