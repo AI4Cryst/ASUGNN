@@ -9,8 +9,6 @@ from torch.nn import functional as F
 logger = logging.getLogger(__name__)
 
 
-
-
 class NetConfig:
     """ base PointNet config """
 
