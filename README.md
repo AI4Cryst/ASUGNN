@@ -3,7 +3,7 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction
 
 ![Screenshot 2024-07-24 at 19 24 25](https://github.com/user-attachments/assets/ecd5c325-a1a6-49f1-9f41-c4fc4aa48c1f)
 
-## Dataprocessing.py
+## ./src/Dataprocessing.py
 
 `Dataprocessing.py` is used to extract structural data from one database and write it into another database. All screened structures are saved as a new database to be used in the neural network workflow. This process is accelerated through parallel processing. The specific operations are as follows:
 
@@ -11,7 +11,7 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction
 2. **Processing Data**: Use the `cry2graph` module from the Crylearn library to convert the extracted atomic structure data into a graph representation, including node embeddings, adjacency matrices, and global information.
 3. **Parallel Processing**: Use `ProcessPoolExecutor` to process each database entry in parallel to speed up the processing.
 
-## Model.py
+## ./src/Model.py
 
 `Model.py` contains the implementation of ASUGNN using PyTorch. The main components are:
 
@@ -23,7 +23,7 @@ Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction
 5. **ASU_Codec**: A stack of `ASU_codec_block` modules forming the core of the attention-based encoder.
 
 
-## predict.py
+## ./src/predict.py
 
 
 `predict.py` is designed to load a pre-trained model, perform predictions on a dataset of graph-based data, and retrieve essential graph-related information from a database.
