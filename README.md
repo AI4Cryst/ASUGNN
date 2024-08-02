@@ -53,7 +53,7 @@ entry_id = 1
 N, ASUAM, DAM, PXRD = cry2graph.parser(database, entry_id).get()
 ```
 
-Parse the crystal by lattice cell. Each atom contained in the lattice is a node with a 106-dimensional embedding (N * 106). The distance between any pair of nodes is given in the distance matrix (N * N). `XRDpattern` is the simulated diffraction pattern of the crystal.
+Parse the crystal by lattice cell. Each atom contained in the lattice is a node with a 106-dimensional embedding (N * 106). The distance between any pair of nodes is given in the distance matrix (N * N). `PXRD` is the simulated diffraction pattern of the crystal.
 
 - `N` (np.ndarray): The node embeddings, 106-dimensional.
 - `ASUAM` (np.ndarray): The ASU matrix.
