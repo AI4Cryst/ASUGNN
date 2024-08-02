@@ -38,7 +38,7 @@ pred, tru = load_model_and_predict(model_path, dataset)
 Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGNN)
 
 
-## 2. Graph Embedding of Each Data Entry
+## Graph Embedding of ASUGNN
 
 To perform graph embedding on each data (saved in db) entry, use the `Crylearn` package:
 
