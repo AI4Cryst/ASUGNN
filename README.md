@@ -36,3 +36,27 @@ pred, tru = load_model_and_predict(model_path, dataset)
 ```
 
 Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGNN)
+
+
+## 2. Graph Embedding of Each Data Entry
+
+To perform graph embedding on each data (saved in db) entry, use the `Crylearn` package:
+
+
+```python
+from Crylearn import cry2graph
+from ase.db import connect
+
+database = connect('demo.db')
+entry_id = 1
+
+N, ASUAM, DAM, PXRD = cry2graph.parser(database, entry_id).get()
+```
+
+Parse the crystal by lattice cell. Each atom contained in the lattice is a node with a 106-dimensional embedding (N * 106). The distance between any pair of nodes is given in the distance matrix (N * N). `XRDpattern` is the simulated diffraction pattern of the crystal.
+
+- `N` (np.ndarray): The node embeddings, 106-dimensional.
+- `ASUAM` (np.ndarray): The ASU matrix.
+- `DAM` (np.ndarray): The distance matrix in Cartesian coordinates.
+- `PXRD` (np.ndarray): Global information about the graph, 140-dimensional.
+
