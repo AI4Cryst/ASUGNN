@@ -42,6 +42,7 @@ Download the pretrained ASUGNN at : [ASUGNN](https://huggingface.co/caobin/ASUGN
 
 To perform graph embedding on each data (saved in db) entry, use the `Crylearn` package:
 
+`Python==3.9.19`
 
 ```python
 from Crylearn import cry2graph
