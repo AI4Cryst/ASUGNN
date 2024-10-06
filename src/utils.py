@@ -1,4 +1,3 @@
-# Author: Bin CAO <barniecao@outlook.com>
 
 import json
 import torch
@@ -14,73 +13,70 @@ from ase.db.row import AtomsRow
 from joblib import Parallel, delayed
 
 
-
-
 def set_seed(seed):
+    """
+    Set seed for reproducibility.
+    
+    Args:
+        seed (int): Seed value to ensure consistent results.
+    """
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
 
 
-def GBF_distance_encode(matrix, min, max, step):
+def GBF_distance_encode(matrix, min_value, max_value, step):
     """
-    Encode the distance information in the input matrix using Gaussian-based functions.
+    Gaussian-based function encoding for distance matrices.
 
     Args:
-        matrix (numpy.array): The input matrix containing distance information.
-        min (float): The minimum value for encoding.
-        max (float): The maximum value for encoding.
-        step (int): The number of steps for encoding.
+        matrix (numpy.array): Distance matrix to encode.
+        min_value (float): Minimum value of encoding range.
+        max_value (float): Maximum value of encoding range.
+        step (int): Number of encoding steps.
 
     Returns:
-        numpy.array: The encoded matrix with distance information.
+        numpy.array: Encoded matrix with additional feature dimensions.
     """
-    gamma = (max - min) / (step - 1)
-    filters = np.linspace(min, max, step)
-    matrix = matrix[:, :, np.newaxis]
-    matrix = np.tile(matrix, (1, 1, step))
-    matrix = np.exp(-((matrix - filters) ** 2) / gamma**2)
+    gamma = (max_value - min_value) / (step - 1)
+    filters = np.linspace(min_value, max_value, step)
+    matrix = matrix[:, :, np.newaxis]  # Add an extra dimension
+    matrix = np.tile(matrix, (1, 1, step))  # Duplicate matrix along the new dimension
+    matrix = np.exp(-((matrix - filters) ** 2) / gamma ** 2)  # Apply Gaussian filter
     return matrix
-
-
 
 
 def mask_elements_over_threshold(matrix, threshold):
     """
-    A function that masks elements in a matrix that are over a certain threshold.
+    Mask elements in a matrix that are above a specified threshold by setting them to zero.
 
     Args:
         matrix (numpy.array): The input matrix to be masked.
-        threshold (float): The threshold value for masking.
+        threshold (float): Threshold value for masking.
 
     Returns:
-        numpy.array: The masked matrix with elements over the threshold set to 0.0.
+        numpy.array: Masked matrix with values over the threshold set to 0.
     """
-    masked_matrix = np.where(matrix > threshold, 0.0, matrix)
-    return masked_matrix
+    return np.where(matrix > threshold, 0.0, matrix)
 
 
 class CharDataset(Dataset):
     def __init__(self, node_data, edge_data, graph_data, response, max_length, node_embd_len, graph_embd_len):
         """
-        Initializes a new instance of the CharDataset class.
+        Dataset for handling node, edge, and graph data with energy as the response.
 
         Args:
-            node_data (list): A list of node data.
-            edge_data (list): A list of edge data.
-            graph_data (list): A list of graph data.
-            response (list): A list of responses.
-            max_length (int): The maximum length of the data.
-            node_embd_len (int): The length of the node embedding.
-            graph_embd_len (int): The length of the graph embedding.
-
-        Returns:
-            None
+            node_data (list): List of node embedding data.
+            edge_data (list): List of edge adjacency matrices.
+            graph_data (list): List of graph embeddings.
+            response (list): List of target energies (responses).
+            max_length (int): Maximum sequence length for padding.
+            node_embd_len (int): Length of the node embedding vector.
+            graph_embd_len (int): Length of the graph embedding vector.
         """
-
         self.data_size = len(node_data)
-        print('data has %d examples' % (self.data_size))
+        print(f'Dataset contains {self.data_size} examples.')
         self.node_data = node_data
         self.edge_data = edge_data
         self.graph_data = graph_data
@@ -90,46 +86,48 @@ class CharDataset(Dataset):
         self.graph_embd_len = graph_embd_len
 
     def __len__(self):
+        """Returns the size of the dataset."""
         return self.data_size
 
     def __getitem__(self, idx):
         """
-        Returns a tuple containing padded node, edge, graph, mask, and energy tensors for a given index.
-        
-        :param idx: An integer representing the index of the data to retrieve.
-        :type idx: int
-        :return: A tuple containing the following tensors:
-                    - node_padded: A tensor of shape (max_length, node_embd_len) representing padded node data.
-                    - edge_padded: A tensor of shape (max_length, max_length, edge_rbf_bins) representing padded edge data.
-                    - graph: A tensor of shape (graph_embd_len) representing graph data.
-                    - mask: A tensor of shape (max_length) representing a mask indicating the presence of atoms.
-                    - energy: A tensor of shape (1) representing the energy of the system.
-        :rtype: tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor)
-        """
-        # go to node_embedding
-        node = np.array(self.node_data[idx])
-        n_atoms = len(node)
-        node_padded = torch.zeros(self.max_length, self.node_embd_len)
-        node_padded[:n_atoms, :] = torch.tensor(node).float()
+        Returns the padded node, edge, graph, mask, and energy tensors for the specified index.
 
-        # go to edge_embedding
+        Args:
+            idx (int): Index of the data item to retrieve.
+
+        Returns:
+            tuple: Tuple of tensors:
+                - node_padded: Padded node data.
+                - edge_padded: Padded edge data.
+                - graph: Graph data.
+                - mask: Mask to indicate valid atoms.
+                - energy: Energy value (target).
+        """
+        # Process node data
+        node = np.array(self.node_data[idx])
+        n_atoms = len(node)  # Number of atoms
+        node_padded = torch.zeros(self.max_length, self.node_embd_len)
+        node_padded[:n_atoms, :] = torch.tensor(node).float()  # Pad node embeddings
+
+        # Process edge data
         edge = np.array(self.edge_data[idx])
-        edge_rbf_bins = 12
-        edge_extr = edge[:, :, np.newaxis]
+        edge_rbf_bins = 12  # Number of radial basis function bins for edge encoding
+        edge_extr = edge[:, :, np.newaxis]  # Add extra dimension for encoding
         edge_extr = np.repeat(edge_extr, edge_rbf_bins, axis=-1)
-        edge = mask_elements_over_threshold(1.0 / edge, 8.0)
+        edge = mask_elements_over_threshold(1.0 / edge, 8.0)  # Apply threshold mask
         edge_zero_extr = edge[:, :, np.newaxis]
         edge_zero_extr = np.repeat(edge_zero_extr, edge_rbf_bins, axis=-1)
-        edge_embedding = GBF_distance_encode(edge, 0.0, 8.0, edge_rbf_bins)
-        edge_embedding[edge_extr == 1] = 1.0
-        edge_embedding[edge_zero_extr == 0] = 0.0
+        edge_embedding = GBF_distance_encode(edge, 0.0, 8.0, edge_rbf_bins)  # Encode distances
+        edge_embedding[edge_extr == 1] = 1.0  # Handle special edge cases
+        edge_embedding[edge_zero_extr == 0] = 0.0  # Handle zero cases
         edge_padded = torch.zeros(self.max_length, self.max_length, edge_rbf_bins)
-        edge_padded[:n_atoms, :n_atoms, :] = torch.tensor(edge_embedding).float()
+        edge_padded[:n_atoms, :n_atoms, :] = torch.tensor(edge_embedding).float()  # Pad edges
 
-        # go to graph_embedding
+        # Process graph embedding and mask
         graph = torch.tensor(np.array(self.graph_data[idx])).float()
         mask = torch.zeros(self.max_length).long()
-        mask[:n_atoms] = 1
+        mask[:n_atoms] = 1  # Mask indicates which atoms are present
         energy = torch.tensor(np.array(self.response[idx])).float()
-        return node_padded, edge_padded, graph, mask, energy.unsqueeze(0)
 
+        return node_padded, edge_padded, graph, mask, energy.unsqueeze(0)  # Return energy with extra dimension

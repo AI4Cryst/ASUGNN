@@ -1,4 +1,3 @@
-# Author: Bin CAO <barniecao@outlook.com>
 
 import math
 import logging
