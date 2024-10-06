@@ -17,7 +17,7 @@ The graph embedding is performed on each entry in the database using the `Crylea
 
 ### Requirements
 
-- Python 3.9.19
+- `Python 3.9.19`
 - `Crylearn`
 - `ase`
 

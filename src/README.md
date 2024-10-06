@@ -1,10 +1,10 @@
 ### DataProcessing.py
 
-`DataProcessing.py` is designed to extract structural data from a source database and write it into a target database. All screened structures are saved as a new database for use in neural network workflows. The specific operations performed are as follows:
+`data_processing.py` is designed to extract structural data from a source database and write it into a target database. All screened structures are saved as a new database for use in neural network workflows. The specific operations performed are as follows:
 
 1. **Extracting Data from the Database**: Connect to the source database and retrieve information for each entry, including atomic structures and formation energy.
 
-2. **Processing Data**: Utilize the `cry2graph` module from the Crylearn library to convert the extracted atomic structure data into a graph representation. This includes generating node embeddings, adjacency matrices, and global information.
+2. **Processing Data**: Utilize the `Crylearn` module from the Crylearn library to convert the extracted atomic structure data into a graph representation. This includes generating node embeddings, adjacency matrices, and global information.
 
 3. **Parallel Processing**: Employ `ProcessPoolExecutor` to process each database entry in parallel, significantly speeding up the data processing workflow.
 
@@ -15,12 +15,12 @@
 You can now run the script from the command line like this:
 
 ```bash
-python DataProcessing.py --database_path /home/cb/cb_crystal/test_ASUnet/temp/structures.db --new_database_path ./temp/filter_self_struc_cif.db
+python data_processing.py --database_path /home/cb/cb_crystal/test_ASUnet/temp/structures.db --new_database_path ./temp/filter_self_struc_cif.db
 ```
 
 ### Model.py
 
-`Model.py` contains the implementation of the ASUGNN (Asymmetric Unit-Based Graph Neural Network) using PyTorch. The main components of this module are as follows:
+`models.py` contains the implementation of the ASUGNN (Asymmetric Unit-Based Graph Neural Network) using PyTorch. The main components of this module are as follows:
 
 1. **NetConfig**: A configuration class that sets up the base parameters for the ASUGNN model, allowing for easy adjustments and experimentation.
 
