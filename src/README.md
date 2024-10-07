@@ -30,7 +30,7 @@ python data_processing.py --database_path /home/cb/cb_crystal/test_ASUnet/temp/s
 
 4. **ASU_codec_block**: A codec block that integrates self-attention, cross-attention, and multi-layer perceptron (MLP) modules, forming the building blocks of the ASUGNN architecture.
 
-5. **ASU_Codec**: A stack of `ASU_codec_block` modules that forms the core of the attention-based encoder, facilitating complex feature extraction and representation learning.
+5. **ASU_encoder**: A stack of `ASU_codec_block` modules that forms the core of the attention-based encoder, facilitating complex feature extraction and representation learning.
 
 
 ### predict.py
