@@ -10,7 +10,7 @@ from torch.nn import functional as F
 logger = logging.getLogger(__name__)
 
 
-class NetConfig:
+class PointNetConfig:
     """ base PointNet config """
 
     def __init__(self, embeddingSize, numberofPoints,
@@ -22,8 +22,20 @@ class NetConfig:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+class GPTConfig:
+    embd_pdrop = 0.0001
+    resid_pdrop = 0.0001
+    attn_pdrop = 0.0001
 
-class CausalSelfAttention(nn.Module):
+    def __init__(self, max_length, node_embd_len, graph_embd_len, **kwargs):
+        self.max_length = max_length
+        self.node_embd_len = node_embd_len
+        self.graph_embd_len = graph_embd_len
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+            
+
+class CausalSelfAttention_masked_for_formula(nn.Module):
     def __init__(self, config):
         """
         Initializes the CausalSelfAttention module.
@@ -103,10 +115,10 @@ class CausalSelfAttention(nn.Module):
         return y
 
 
-class CausalCrossAttention(nn.Module):
+class CausalCrossAttention_masked_for_formula(nn.Module):
     def __init__(self, config):
         """
-        Initializes the CausalCrossAttention module.
+        Initializes the CausalCrossAttention_masked_for_formula module.
         Args:
             config (object): The configuration object containing the following attributes:
                 - n_embd (int): The embedding size.
@@ -161,10 +173,10 @@ class CausalCrossAttention(nn.Module):
         return y
 
 
-class ASU_codec_block(nn.Module):
+class Transformer_encoder_block(nn.Module):
     def __init__(self, config):
         """
-        Initializes the ASU_codec_block module with the given configuration.
+        Initializes the Transformer_encoder_block (renamed as ASU_codec_block) module with the given configuration.
         
         Args:
             config (object): The configuration object containing the following attributes:
@@ -174,17 +186,17 @@ class ASU_codec_block(nn.Module):
         Initializes the following attributes:
             - ln1 (nn.LayerNorm): Layer normalization for the first layer.
             - ln2 (nn.LayerNorm): Layer normalization for the second layer.
-            - attn1 (CausalSelfAttention): The causal self-attention module.
+            - attn1 (CausalSelfAttention_masked_for_formula): The causal self-attention module.
             - mlp (nn.Sequential): The multi-layer perceptron module.
             - ln3 (nn.LayerNorm): Layer normalization for the third layer.
             - ln4 (nn.LayerNorm): Layer normalization for the fourth layer.
-            - attn2 (CausalCrossAttention): The causal cross-attention module.
+            - attn2 (CausalCrossAttention_masked_for_formula): The causal cross-attention module.
             - mlp2 (nn.Sequential): The second multi-layer perceptron module.
         """
         super().__init__()
         self.ln1 = nn.LayerNorm(config.n_embd)
         self.ln2 = nn.LayerNorm(config.n_embd)
-        self.attn1 = CausalSelfAttention(config)
+        self.attn1 = CausalSelfAttention_masked_for_formula(config)
         self.mlp = nn.Sequential(
             nn.Linear(config.n_embd, 4 * config.n_embd),
             nn.GELU(),
@@ -193,7 +205,7 @@ class ASU_codec_block(nn.Module):
         )
         self.ln3 = nn.LayerNorm(config.n_embd)
         self.ln4 = nn.LayerNorm(config.n_embd)
-        self.attn2 = CausalCrossAttention(config)
+        self.attn2 = CausalCrossAttention_masked_for_formula(config)
         self.mlp2 = nn.Sequential(
             nn.Linear(config.n_embd, 4 * config.n_embd),
             nn.GELU(),
@@ -221,16 +233,16 @@ class ASU_codec_block(nn.Module):
         x = x + self.mlp2(self.ln4(x))
         return x
 
-class ASU_Codec(nn.Module):
+class Transformer_formula_encoder(nn.Module):
     def __init__(self, config):
         """
-        Initializes the ASU_Codec class with a list of ASU_codec_block instances based on the specified configuration.
+        Initializes the Transformer_formula_encoder(renamed as ASU_encoder) class with a list of ASU_codec_block instances based on the specified configuration.
         
         Parameters:
-            config: Configuration object containing parameters for initializing the ASU_Codec.
+            config: Configuration object containing parameters for initializing the ASU_encoder.
         """
         super().__init__()
-        self.blocks = nn.ModuleList([ASU_codec_block(config) for _ in range(config.n_layer)])
+        self.blocks = nn.ModuleList([Transformer_encoder_block(config) for _ in range(config.n_layer)])
     def forward(self, x, x_padding_judge, adj, graph):
         for block in self.blocks:
             x = block(x, x_padding_judge, adj, graph, is_formula=True)
@@ -238,7 +250,8 @@ class ASU_Codec(nn.Module):
 
 
 
-class ASUGNN(nn.Module):
+
+class GPT(nn.Module):
     def __init__(self, config, pointNetConfig=None):
         """
         Initializes the ASUGNN model.
@@ -289,7 +302,7 @@ class ASUGNN(nn.Module):
         )
         self.drop = nn.Dropout(config.embd_pdrop)
         self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
-        self.Trans_element_encoder = ASU_Codec(config)
+        self.Trans_element_encoder = Transformer_formula_encoder(config)
         self.ln_before_aggregate = nn.LayerNorm(config.n_embd)
         self.ln_after_aggregate = nn.LayerNorm(2 * config.n_embd)
         self.out1 = nn.Linear(2 * config.n_embd, 4 * config.n_embd)

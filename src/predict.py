@@ -1,4 +1,3 @@
-
 import argparse  
 import logging
 import glob
@@ -54,7 +53,7 @@ def get_all_mpids(db):
 
 def load_model_and_predict(model_path, dataset, batch_size=64):
     """
-    Load a pre-trained model, move it to the GPU, and perform predictions on a given dataset.
+    Load a pre-trained model, move it to the appropriate device (GPU or CPU), and perform predictions on a given dataset.
 
     Args:
         model_path (str): Path to the saved model.
@@ -67,16 +66,18 @@ def load_model_and_predict(model_path, dataset, batch_size=64):
     prediction = []
     truth = []
 
-    # Load the model from the specified path
-    model = torch.load(model_path)
-    model = model.to("cuda")  # Move the model to the GPU
-    
-    # Check for the available GPU device
-    device = torch.cuda.current_device()
-    logging.info(f'Device: {device}')
+    # Check if CUDA (GPU) is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logging.info(f'Using device: {device}')
+
+    # Load the model from the specified path and move it to the appropriate device
+    model = torch.load(model_path, map_location=device)
+    model = model.to(device)
 
     # Use DataParallel for multi-GPU support, if available
-    model = torch.nn.DataParallel(model).to(device)
+    if torch.cuda.device_count() > 1:
+        logging.info(f'Using {torch.cuda.device_count()} GPUs!')
+        model = torch.nn.DataParallel(model)
 
     # Initialize DataLoader for predictions
     prediction_dataloader = DataLoader(
@@ -89,7 +90,8 @@ def load_model_and_predict(model_path, dataset, batch_size=64):
     # Progress bar for tracking prediction process
     pbar = tqdm(enumerate(prediction_dataloader), total=len(prediction_dataloader))
     for _, (nodes, edges, graph, mask, energy) in pbar:
-        nodes, edges, graph, mask, energy = map(lambda x: x.cuda(), [nodes, edges, graph, mask, energy])
+        # Move data to the same device as the model
+        nodes, edges, graph, mask, energy = map(lambda x: x.to(device), [nodes, edges, graph, mask, energy])
 
         # Disable gradient computation for inference
         with torch.no_grad():
@@ -107,9 +109,6 @@ def load_model_and_predict(model_path, dataset, batch_size=64):
 
 
 if __name__ == "__main__":
-    # Set GPU device environment
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0' 
-
     # Set random seed for reproducibility
     set_seed(42)
 
