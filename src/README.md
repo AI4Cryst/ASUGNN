@@ -1,4 +1,4 @@
-### DataProcessing.py
+### data_processing.py
 
 `data_processing.py` is designed to extract structural data from a source database and write it into a target database. All screened structures are saved as a new database for use in neural network workflows. The specific operations performed are as follows:
 
@@ -18,7 +18,7 @@ You can now run the script from the command line like this:
 python data_processing.py --database_path /home/cb/cb_crystal/test_ASUnet/temp/structures.db --new_database_path ./temp/filter_self_struc_cif.db
 ```
 
-### Model.py
+### models.py
 
 `models.py` contains the implementation of the ASUGNN (Asymmetric Unit-Based Graph Neural Network) using PyTorch. The main components of this module are as follows:
 
