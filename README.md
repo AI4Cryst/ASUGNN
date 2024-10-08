@@ -11,9 +11,15 @@
 
 ASUGNN is a Graph Neural Network (GNN) designed for crystal property prediction, leveraging asymmetric unit-based graph representations. This approach efficiently captures the structural and chemical properties of crystals, making it highly suitable for materials informatics tasks.
 
+
++ HMdataset.db: A zero-shot test dataset
+You can test your model's zero-shot capability by predicting the formation energy per atom using the HMdataset (1,100 data) and upload your results on Kaggle : https://www.kaggle.com/competitions/asugnn.
+
+
 ## Graph Embedding of ASUGNN
 
 The graph embedding is performed on each entry in the database using the `Crylearn` package. It extracts structural information about the crystal, including node embeddings, the ASU matrix, a distance matrix, and the simulated PXRD pattern.
+
 
 ### Requirements
 
