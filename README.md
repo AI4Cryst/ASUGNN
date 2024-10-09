@@ -14,7 +14,8 @@ ASUGNN is a Graph Neural Network (GNN) designed for crystal property prediction,
 
 + HMdataset.db: A zero-shot test dataset
 You can test your model's zero-shot capability by predicting the formation energy per atom using the [HMdataset](https://huggingface.co/caobin/ASUGNN/blob/main/README.md) (1,100 data) and upload your results on Kaggle : https://www.kaggle.com/competitions/asugnn.
-
++ Source Code : [src](https://github.com/AI4Cr/ASUGNN/tree/main/src)
++ Tutorial : [notebook](https://github.com/AI4Cr/ASUGNN/blob/main/Tutorial.ipynb)
 
 ## Graph Embedding of ASUGNN
 
