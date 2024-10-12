@@ -23,8 +23,19 @@ def process_entry(k, database_path):
         item = database.get(id=_id)
         atoms = item.toatoms()
         node_embedding, adj_matrix, dis_matrix, global_info = cry2graph.parser(database, _id).get()
-        formation_energy = item['formation_energy']
-        return atoms, formation_energy, node_embedding, adj_matrix, global_info
+        
+        if item['band_gap'] < 1e-15:
+            metal = 1
+        else : metal = 0 # non-metal
+
+        response = {
+                    'formation_energy': item['formation_energy'],
+                    'band_gap': item['band_gap'],
+                    'bulk_modulus': item['bulk_modulus'],
+                    'metal' : metal
+                }
+        
+        return atoms, response, node_embedding, adj_matrix, global_info
     except Exception as e:
         print(f"An error occurred for ID {_id}: {e}")
         return None
@@ -55,10 +66,10 @@ def filter_and_write_database(database_path, new_database_path, process_entry):
             result = future.result()
             
             if result is not None:
-                atoms, formation_energy, node_embedding, adj_matrix, global_info = result
+                atoms, response, node_embedding, adj_matrix, global_info = result
                 
                 # Filter out entries based on node embedding size
-                if len(node_embedding) > 300:
+                if len(node_embedding) > 500:
                     continue
                 
                 # Write filtered data to the new database
@@ -67,7 +78,9 @@ def filter_and_write_database(database_path, new_database_path, process_entry):
                     'adj_matrix': adj_matrix,
                     'global_info': global_info
                 }
-                newdb.write(atoms=atoms, formation_energy=formation_energy, data=data)
+                newdb.write(atoms=atoms,formation_energy=response['formation_energy'], 
+                            band_gap=response['band_gap'],bulk_modulus=response['bulk_modulus'], 
+                            metal=response['metal'], data=data)
 
 
 if __name__ == "__main__":
