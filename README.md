@@ -17,6 +17,9 @@ You can test your model's zero-shot capability by predicting the formation energ
 + Source Code : [src](https://github.com/AI4Cr/ASUGNN/tree/main/src)
 + Tutorial : [notebook](https://github.com/AI4Cr/ASUGNN/blob/main/Tutorial.ipynb)
 
+## Crystal Data
+If you need the organized crystal database, visit here: https://huggingface.co/datasets/caobin/CrystDB
+
 ## Graph Embedding of ASUGNN
 
 The graph embedding is performed on each entry in the database using the `Crylearn` package. It extracts structural information about the crystal, including node embeddings, the ASU matrix, a distance matrix, and the simulated PXRD pattern.
