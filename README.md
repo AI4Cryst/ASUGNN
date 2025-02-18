@@ -67,3 +67,28 @@ N, ASUAM, DAM, PXRD = cry2graph.parser(database, entry_id).get()
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 
+## Toolkit sharing 🚀 🚀 🚀
+### **ASUkit: Symmetric Graph Representation of a Crystal**
+
+ASUkit provides a Symmetric graph-based representation of a crystal structure. see tutorial [here](https://github.com/AI4Cr/ASUGNN/blob/main/tutorial/tutorial.ipynb) 
+
+### **Concept**
+First, the package decomposes the crystal structure into its fundamental unit: the **Asymmetric Unit (ASU)**, ref definition at [RCSB PDB guide](https://pdb101.rcsb.org/learn/guide-to-understanding-pdb-data/biological-assemblies).
+
+### **Outputs**
+ASUkit generates the following key outputs:
+
+- **`node`**: An \(N \times 106\) matrix, where \(N\) is the number of atoms in the conventional unit cell, and 106 represents the atomic and structural attributes (refer to our paper for details).
+- **`asu_adj_matrix`**: An \(N \times N\) adjacency matrix, where atoms within the same symmetry group are connected by 1, and all other connections are 0.
+- **`distance_matrix`**: An \(N \times N\) matrix storing pairwise atomic distances in Cartesian coordinates.
+- **`ideal_pxrd`**: A simulated ideal powder X-ray diffraction (PXRD) pattern, reflecting the atomic arrangement in reciprocal space.
+
+### **References**
+- *ASUGNN: An asymmetric-unit-based graph neural network for crystal property prediction.*  
+  *Applied Crystallography, 58(1).*  
+  [Link to paper](https://journals.iucr.org/paper?ei5123)
+
+- **GitHub Repository**:  
+  [ASUGNN GitHub](https://github.com/AI4Cr/ASUGNN/tree/main/paper)
+
+
