@@ -1,7 +1,6 @@
 
-# [ASUGNN](https://doi.org/10.1107/S1600576724011336)
 
-**Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction**
+**ASUGNN ： Asymmetric Unit-Based Graph Neural Network for Crystal Property Prediction** | [Paper](https://doi.org/10.1107/S1600576724011336)
 
 ![image](https://github.com/user-attachments/assets/d2af74d4-4519-4386-b0cc-ebfb43f3b8f9)
 
